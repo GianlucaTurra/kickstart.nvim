@@ -269,7 +269,7 @@ require('lazy').setup({
   -- Then, because we use the `opts` key (recommended), the configuration runs
   -- after the plugin has been loaded as `require(MODULE).setup(opts)`.
 
-  { -- Useful plugin to show you pending keybinds.
+  {                     -- Useful plugin to show you pending keybinds.
     'folke/which-key.nvim',
     event = 'VimEnter', -- Sets the loading event to 'VimEnter'
     opts = {
@@ -315,7 +315,7 @@ require('lazy').setup({
 
       -- Document existing key chains
       spec = {
-        { '<leader>c', group = '[C]ode', mode = { 'n', 'x' } },
+        { '<leader>c', group = '[C]ode',     mode = { 'n', 'x' } },
         { '<leader>d', group = '[D]ocument' },
         { '<leader>r', group = '[R]ename' },
         { '<leader>s', group = '[S]earch' },
@@ -355,7 +355,7 @@ require('lazy').setup({
       { 'nvim-telescope/telescope-ui-select.nvim' },
 
       -- Useful for getting pretty icons, but requires a Nerd Font.
-      { 'nvim-tree/nvim-web-devicons', enabled = vim.g.have_nerd_font },
+      { 'nvim-tree/nvim-web-devicons',            enabled = vim.g.have_nerd_font },
     },
     config = function()
       -- Telescope is a fuzzy finder that comes with a lot of different things that
@@ -451,7 +451,7 @@ require('lazy').setup({
       },
     },
   },
-  { 'Bilal2453/luvit-meta', lazy = true },
+  { 'Bilal2453/luvit-meta',     lazy = true },
   {
     -- Main LSP Configuration
     'neovim/nvim-lspconfig',
@@ -465,7 +465,7 @@ require('lazy').setup({
 
       -- Useful status updates for LSP.
       -- NOTE: `opts = {}` is the same as calling `require('fidget').setup({})`
-      { 'j-hui/fidget.nvim', opts = {} },
+      { 'j-hui/fidget.nvim',       opts = {} },
 
       -- Allows extra capabilities provided by nvim-cmp
       'hrsh7th/cmp-nvim-lsp',
@@ -618,7 +618,45 @@ require('lazy').setup({
       --  - settings (table): Override the default settings passed when initializing the server.
       --        For example, to see the options for `lua_ls`, you could go to: https://luals.github.io/wiki/settings/
       local servers = {
-        ruff = {},
+        ruff = {
+          RuffAutofix = {
+            function()
+              vim.lsp.buf.execute_command {
+                command = 'ruff.applyAutofix',
+                arguments = {
+                  { uri = vim.uri_from_bufnr(0) },
+                },
+              }
+            end,
+            description = 'Ruff: Fix all auto-fixable problems',
+          },
+          RuffOrganizeImports = {
+            function()
+              vim.lsp.buf.execute_command {
+                command = 'ruff.applyOrganizeImports',
+                arguments = {
+
+                  { uri = vim.uri_from_bufnr(0) },
+                },
+              }
+            end,
+
+            description = 'Ruff: Format imports',
+          },
+        },
+        basedpyright = {
+          disableOrganizeImports = true,
+          disableTaggedHints = false,
+          analysis = {
+            typeCheckingMode = 'standard',
+            useLibraryCodeForTypes = true, -- Analyze library code for type information
+            autoImportCompletions = true,
+            autoSearchPaths = true,
+            diagnosticSeverityOverrides = {
+              reportIgnoreCommentWithoutRule = true,
+            },
+          },
+        },
         -- clangd = {},
         -- gopls = {},
         -- pyright = {},
@@ -680,49 +718,6 @@ require('lazy').setup({
         },
       }
     end,
-  },
-
-  { -- Autoformat
-    'stevearc/conform.nvim',
-    event = { 'BufWritePre' },
-    cmd = { 'ConformInfo' },
-    keys = {
-      {
-        '<leader>f',
-        function()
-          require('conform').format { async = true, lsp_format = 'fallback' }
-        end,
-        mode = '',
-        desc = '[F]ormat buffer',
-      },
-    },
-    opts = {
-      notify_on_error = false,
-      format_on_save = function(bufnr)
-        -- Disable "format_on_save lsp_fallback" for languages that don't
-        -- have a well standardized coding style. You can add additional
-        -- languages here or re-enable it for the disabled ones.
-        local disable_filetypes = { c = true, cpp = true }
-        local lsp_format_opt
-        if disable_filetypes[vim.bo[bufnr].filetype] then
-          lsp_format_opt = 'never'
-        else
-          lsp_format_opt = 'fallback'
-        end
-        return {
-          timeout_ms = 500,
-          lsp_format = lsp_format_opt,
-        }
-      end,
-      formatters_by_ft = {
-        lua = { 'stylua' },
-        -- Conform can also run multiple formatters sequentially
-        -- python = { "isort", "black" },
-        --
-        -- You can use 'stop_after_first' to run the first available formatter from the list
-        -- javascript = { "prettierd", "prettier", stop_after_first = true },
-      },
-    },
   },
 
   { -- Autocompletion
@@ -934,18 +929,18 @@ require('lazy').setup({
   --  Here are some example plugins that I've included in the Kickstart repository.
   --  Uncomment any of the lines below to enable them (you will need to restart nvim).
   --
-  -- require 'kickstart.plugins.debug',
+  require 'kickstart.plugins.debug',
   -- require 'kickstart.plugins.indent_line',
   require 'kickstart.plugins.lint',
   require 'kickstart.plugins.autopairs',
-  -- require 'kickstart.plugins.neo-tree',
+  require 'kickstart.plugins.neo-tree',
   -- require 'kickstart.plugins.gitsigns', -- adds gitsigns recommend keymaps
 
   -- NOTE: The import below can automatically add your own plugins, configuration, etc from `lua/custom/plugins/*.lua`
   --    This is the easiest way to modularize your config.
   --
   --  Uncomment the following line and add your plugins to `lua/custom/plugins/*.lua` to get going.
-  -- { import = 'custom.plugins' },
+  { import = 'custom.plugins' },
   --
   -- For additional information with loading, sourcing and examples see `:help lazy.nvim-🔌-plugin-spec`
   -- Or use telescope!

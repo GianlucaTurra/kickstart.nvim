@@ -595,6 +595,22 @@ require('lazy').setup({
         end,
       })
 
+      -- Disabling ruff hover in favor of pyright
+      vim.api.nvim_create_autocmd('LspAttach', {
+        group = vim.api.nvim_create_augroup('lsp_attach_disable_ruff_hover', { clear = true }),
+        callback = function(args)
+          local client = vim.lsp.get_client_by_id(args.data.client_id)
+          if client == nil then
+            return
+          end
+          if client.name == 'ruff' then
+            -- Disable hover in favor of Pyright
+            client.server_capabilities.hoverProvider = false
+          end
+        end,
+        desc = 'LSP: Disable hover capability from Ruff',
+      })
+
       -- Change diagnostic symbols in the sign column (gutter)
       if vim.g.have_nerd_font then
         local signs = { ERROR = '', WARN = '', INFO = '', HINT = '' }
@@ -623,47 +639,53 @@ require('lazy').setup({
       --        For example, to see the options for `lua_ls`, you could go to: https://luals.github.io/wiki/settings/
       local servers = {
         ruff = {
-          RuffAutofix = {
-            function()
-              vim.lsp.buf.execute_command {
-                command = 'ruff.applyAutofix',
-                arguments = {
-                  { uri = vim.uri_from_bufnr(0) },
-                },
-              }
-            end,
-            description = 'Ruff: Fix all auto-fixable problems',
+          capabilities = {
+            -- positionEncodings = { 'utf-16' },
           },
-          RuffOrganizeImports = {
-            function()
-              vim.lsp.buf.execute_command {
-                command = 'ruff.applyOrganizeImports',
-                arguments = {
-
-                  { uri = vim.uri_from_bufnr(0) },
-                },
-              }
-            end,
-
-            description = 'Ruff: Format imports',
+          settings = {
+            '--select',
+            'ALL',
+            '--ignore',
+            'D100',
+            'D101',
+            'D102',
+            'D103',
+            'D104',
+            'D105',
+            'D106',
+            'D107',
           },
         },
-        basedpyright = {
-          disableOrganizeImports = true,
-          disableTaggedHints = false,
-          analysis = {
-            typeCheckingMode = 'standard',
-            useLibraryCodeForTypes = true, -- Analyze library code for type information
-            autoImportCompletions = true,
-            autoSearchPaths = true,
-            diagnosticSeverityOverrides = {
-              reportIgnoreCommentWithoutRule = true,
+        html = { filetypes = { 'html' } },
+        cssls = {},
+        terraformls = {},
+        -- basedpyright = {
+        --   disableOrganizeImports = true,
+        --   disableTaggedHints = false,
+        --   analysis = {
+        --     typeCheckingMode = 'basic',
+        --     useLibraryCodeForTypes = true, -- Analyze library code for type information
+        --     autoImportCompletions = true,
+        --     autoSearchPaths = true,
+        --     diagnosticSeverityOverrides = {
+        --       reportIgnoreCommentWithoutRule = true,
+        --     },
+        --   },
+        -- },
+        -- clangd = {},
+        -- gopls = {},
+        pyright = {
+          settings = {
+            pyright = {
+              disableOrganizeImports = true,
+            },
+            python = {
+              analysis = {
+                ignore = { '*' },
+              },
             },
           },
         },
-        -- clangd = {},
-        -- gopls = {},
-        -- pyright = {},
         -- rust_analyzer = {},
         -- ... etc. See `:help lspconfig-all` for a list of all the pre-configured LSPs
         --
@@ -726,7 +748,7 @@ require('lazy').setup({
 
   { -- Autocompletion
     'hrsh7th/nvim-cmp',
-    event = 'InsertEnter',
+    -- event = 'InsertEnter',
     dependencies = {
       -- Snippet Engine & its associated nvim-cmp source
       {
@@ -744,12 +766,12 @@ require('lazy').setup({
           -- `friendly-snippets` contains a variety of premade snippets.
           --    See the README about individual language/framework/plugin snippets:
           --    https://github.com/rafamadriz/friendly-snippets
-          -- {
-          --   'rafamadriz/friendly-snippets',
-          --   config = function()
-          --     require('luasnip.loaders.from_vscode').lazy_load()
-          --   end,
-          -- },
+          {
+            'rafamadriz/friendly-snippets',
+            config = function()
+              require('luasnip.loaders.from_vscode').lazy_load()
+            end,
+          },
         },
       },
       'saadparwaiz1/cmp_luasnip',
@@ -758,6 +780,7 @@ require('lazy').setup({
       --  nvim-cmp does not ship with all sources by default. They are split
       --  into multiple repos for maintenance purposes.
       'hrsh7th/cmp-nvim-lsp',
+      'hrsh7th/cmp-buffer',
       'hrsh7th/cmp-path',
     },
     config = function()

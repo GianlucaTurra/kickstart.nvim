@@ -20,10 +20,10 @@ vim.opt.mouse = 'a'
 vim.opt.showmode = false
 
 -- TABS
-vim.o.tabstop = 4 -- A TAB character looks like 4 spaces
+vim.o.tabstop = 4      -- A TAB character looks like 4 spaces
 vim.o.expandtab = true -- Pressing the TAB key will insert spaces instead of a TAB character
-vim.o.softtabstop = 4 -- Number of spaces inserted instead of a TAB character
-vim.o.shiftwidth = 4 -- Number of spaces inserted when indenting
+vim.o.softtabstop = 4  -- Number of spaces inserted instead of a TAB character
+vim.o.shiftwidth = 4   -- Number of spaces inserted when indenting
 
 -- Sync clipboard between OS and Neovim.
 --  Schedule the setting after `UiEnter` because it can increase startup-time.
@@ -74,6 +74,9 @@ vim.opt.scrolloff = 10
 -- Project specific settings
 vim.o.exrc = true
 vim.o.secure = true
+
+-- Diagnostic
+vim.diagnostic.config { virtual_text = true }
 
 require 'custom.keymaps'
 
@@ -179,7 +182,7 @@ require('lazy').setup({
       },
     },
   },
-  { 'Bilal2453/luvit-meta', lazy = true },
+  { 'Bilal2453/luvit-meta',     lazy = true },
 
   require 'kickstart.plugins.colorscheme',
   -- Highlight todo, notes, etc in comments

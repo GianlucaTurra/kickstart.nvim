@@ -20,11 +20,9 @@ return {
     -- Installs the debug adapters for you
     'williamboman/mason.nvim',
     'jay-babu/mason-nvim-dap.nvim',
-    -- 'mxsdev/nvim-dap-vscode-js',
 
     -- Add your own debuggers here
     'leoluz/nvim-dap-go',
-    -- 'microsoft/vscode-js-debug',
   },
   keys = {
     -- Basic debugging keymaps, feel free to change to your liking!
@@ -97,9 +95,6 @@ return {
       ensure_installed = {
         -- Update this to ensure that you have the debuggers for the langs you want
         'delve',
-        -- Due to a bug with the latest version of vscode-js-debug, need to lock to specific version
-        -- See: https://github.com/mxsdev/nvim-dap-vscode-js/issues/58#issuecomment-2213230558
-        -- 'js@v1.76.1',
       },
     }
 
@@ -130,7 +125,7 @@ return {
     vim.api.nvim_set_hl(0, 'DapStop', { fg = '#ffcc00' })
     local breakpoint_icons = vim.g.have_nerd_font
         and { Breakpoint = '', BreakpointCondition = '', BreakpointRejected = '', LogPoint = '', Stopped = '' }
-      or { Breakpoint = '●', BreakpointCondition = '⊜', BreakpointRejected = '⊘', LogPoint = '◆', Stopped = '⭔' }
+        or { Breakpoint = '●', BreakpointCondition = '⊜', BreakpointRejected = '⊘', LogPoint = '◆', Stopped = '⭔' }
     for type, icon in pairs(breakpoint_icons) do
       local tp = 'Dap' .. type
       local hl = (type == 'Stopped') and 'DapStop' or 'DapBreak'
@@ -149,32 +144,6 @@ return {
         detached = vim.fn.has 'win32' == 0,
       },
     }
-
-    -- setup adapters
-    -- require('dap-vscode-js').setup {
-    --   debugger_path = vim.fn.stdpath 'data' .. '/mason/packages/js-debug-adapter',
-    --   debugger_cmd = { 'js-debug-adapter' },
-    --
-    --   adapters = { 'pwa-node', 'pwa-chrome', 'pwa-msedge', 'node-terminal', 'pwa-extensionHost' },
-    -- }
-    --
-    -- -- custom adapter for running tasks before starting debug
-    -- local custom_adapter = 'pwa-node-custom'
-    -- dap.adapters[custom_adapter] = function(cb, config)
-    --   if config.preLaunchTask then
-    --     local async = require 'plenary.async'
-    --     local notify = require('notify').async
-    --
-    --     async.run(function()
-    --       ---@diagnostic disable-next-line: missing-parameter
-    --       notify('Running [' .. config.preLaunchTask .. ']').events.close()
-    --     end, function()
-    --       vim.fn.system(config.preLaunchTask)
-    --       config.type = 'pwa-node'
-    --       dap.run(config)
-    --     end)
-    --   end
-    -- end
 
     --- Gets a path to a package in the Mason registry.
     --- Prefer this to `get_package`, since the package might not always be
@@ -201,16 +170,6 @@ return {
         },
       },
     }
-
-    -- require('dap-vscode-js').setup {
-    --   -- node_path = "node", -- Path of node executable. Defaults to $NODE_PATH, and then "node"
-    --   debugger_path = '/home/gianluca/.local/share/nvim/vscode-js-debug', -- Path to vscode-js-debug installation.
-    --   -- debugger_cmd = { "js-debug-adapter" }, -- Command to use to launch the debug server. Takes precedence over `node_path` and `debugger_path`.
-    --   adapters = { 'pwa-node', 'pwa-chrome', 'pwa-msedge', 'node-terminal', 'pwa-extensionHost' }, -- which adapters to register in nvim-dap
-    --   -- log_file_path = "(stdpath cache)/dap_vscode_js.log" -- Path for file logging
-    --   -- log_file_level = false -- Logging level for output to file. Set to false to disable file logging.
-    --   -- log_console_level = vim.log.levels.ERROR -- Logging level for output to console. Set to false to disable console output.
-    -- }
 
     for _, language in ipairs { 'javascript', 'typescript' } do
       dap.configurations[language] = {

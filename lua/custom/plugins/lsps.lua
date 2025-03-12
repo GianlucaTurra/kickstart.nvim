@@ -200,7 +200,7 @@ return {
       },
       html = { filetypes = { 'html' } },
       cssls = {},
-      terraformls = {},
+      -- terraformls = {},
       -- clangd = {},
       gopls = {
         settings = {
@@ -313,10 +313,10 @@ return {
     })
 
     vim.api.nvim_create_autocmd('BufWritePre', {
-      pattern = {'*.ts', '*.js', '*.tsx', '*.jsx'},
-      callback = function ()
-        vim.lsp.buf.format({async=true})
-      end
+      pattern = { '*.ts', '*.js', '*.tsx', '*.jsx' },
+      callback = function()
+        vim.lsp.buf.format { async = true }
+      end,
     })
   end,
 }

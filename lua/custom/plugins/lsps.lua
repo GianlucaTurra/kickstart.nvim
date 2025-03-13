@@ -186,7 +186,9 @@ return {
         },
         settings = {
           '--select',
-          'ALL',
+          'E',
+          'F',
+          'I',
           '--ignore',
           'D100',
           'D101',
@@ -200,7 +202,7 @@ return {
       },
       html = { filetypes = { 'html' } },
       cssls = {},
-      terraformls = {},
+      -- terraformls = {},
       -- clangd = {},
       gopls = {
         settings = {
@@ -220,8 +222,24 @@ return {
           },
           python = {
             analysis = {
-              -- typeCheckingMode = 'basic',
-              ignore = { '*' },
+              typeCheckingMode = 'basic', -- Keep type checking enabled
+              useLibraryCodeForTypes = true, -- Keep better type inference
+              autoSearchPaths = true,
+              diagnosticMode = 'openFilesOnly', -- Reduce unnecessary processing
+
+              -- Disable all linting-related diagnostics
+              reportUnusedVariable = 'none',
+              reportUnusedExpression = 'none',
+              reportUnusedImport = 'none',
+              reportGeneralTypeIssues = 'none',
+              reportOptionalSubscript = 'none',
+              reportOptionalMemberAccess = 'none',
+              reportOptionalCall = 'none',
+              reportPrivateUsage = 'none',
+              reportUnboundVariable = 'none',
+              reportUnsupportedDunderAll = 'none',
+              reportUnusedFunction = 'none',
+              reportUnusedClass = 'none',
             },
           },
         },
@@ -255,6 +273,7 @@ return {
           },
         },
       },
+      bashls = {},
     }
 
     -- Ensure the servers and tools above are installed
@@ -313,10 +332,10 @@ return {
     })
 
     vim.api.nvim_create_autocmd('BufWritePre', {
-      pattern = {'*.ts', '*.js', '*.tsx', '*.jsx'},
-      callback = function ()
-        vim.lsp.buf.format({async=true})
-      end
+      pattern = { '*.ts', '*.js', '*.tsx', '*.jsx' },
+      callback = function()
+        vim.lsp.buf.format { async = true }
+      end,
     })
   end,
 }
